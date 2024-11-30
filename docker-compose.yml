@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  go-joke-service:
+    image: joke-service:latest # This should match the image name you used in the Docker build
+    build:
+      context: . # Path to your Dockerfile if you're building directly with docker-compose
+    container_name: go-joke-service
+    ports:
+      - "8080:8080" # Expose port 8080 for your service (adjust as needed)
+      - "9091:9091" # Expose the metrics port for Prometheus scraping
+    environment:
+      - LOG_FILE_PATH=/logs/file.log
+      - METRICS_SERVER=http://localhost:9090
+    volumes:
+      - ./logs:/logs # Mount logs directory to container for persistent logs
+    restart: always
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090" # Expose Prometheus web UI for metrics scraping
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Prometheus config
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge

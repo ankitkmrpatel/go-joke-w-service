@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 10s
+
+scrape_configs:
+  - job_name: 'go-joke-service'
+    static_configs:
+      - targets: ['go-joke-service:9090']
